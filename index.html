@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kalender: July 2025 - June 2026</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f5f5f5;
+    }
+    h2 {
+      text-align: center;
+      margin-top: 40px;
+    }
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .month {
+      background: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .month-name {
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .day-name {
+      font-weight: bold;
+      text-align: center;
+      font-size: 0.8em;
+      color: #333;
+    }
+    .day {
+      position: relative;
+      text-align: center;
+      padding: 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      cursor: default;
+      background: #fff;
+      color: #333;
+    }
+    .day.past {
+      color: #aaa;
+      background: #eee;
+      font-weight: bold;
+    }
+    .day.past::after {
+      content: 'X';
+      color: #c00;
+      font-size: 1em;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    .day.future {
+      background: #fff;
+      color: #333;
+    }
+    .day.special {
+      border: 2px solid red;
+      border-radius: 50%;
+      color: red;
+      font-weight: bold;
+      background: #ffe5e5;
+    }
+  </style>
+</head>
+<body>
+  <h1 style="text-align:center;">Calendar View: 01-07-2025 to 30-06-2026</h1>
+  <div id="calendar" class="calendar"></div>
+
+  <script>
+    const calendarContainer = document.getElementById('calendar');
+
+    const startDate = new Date('2025-07-01 00:00:00');
+    const endDate = new Date('2026-06-30 23:59:59');
+    const today = new Date();
+
+    const specialDates = [
+      '2025-08-01',
+      '2026-01-18',
+      '2026-04-08',
+      '2026-06-30'
+    ];
+
+    const monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+    const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    function generateMonth(year, month) {
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const daysInMonth = lastDay.getDate();
+
+      const monthDiv = document.createElement('div');
+      monthDiv.className = 'month';
+
+      const monthName = document.createElement('div');
+      monthName.className = 'month-name';
+      monthName.textContent = `${monthNames[month]} ${year}`;
+      monthDiv.appendChild(monthName);
+
+      const grid = document.createElement('div');
+      grid.className = 'days-grid';
+
+      // Add day names header
+      for (let d = 0; d < 7; d++) {
+        const dayName = document.createElement('div');
+        dayName.className = 'day-name';
+        dayName.textContent = dayNames[d];
+        grid.appendChild(dayName);
+      }
+
+      // Empty slots before first day
+      for (let i = 0; i < firstDay.getDay(); i++) {
+        const empty = document.createElement('div');
+        grid.appendChild(empty);
+      }
+
+      // Fill in all days
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day);
+
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'day';
+        dayDiv.textContent = day;
+
+        if (date < startDate || date > endDate) {
+          dayDiv.style.visibility = 'hidden';
+        } else {
+          if (date < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+            dayDiv.classList.add('past');
+          } else {
+            dayDiv.classList.add('future');
+          }
+
+          // Highlight special dates
+          const isoString = date.toISOString().slice(0, 10);
+          if (specialDates.includes(isoString)) {
+            dayDiv.classList.add('special');
+          }
+          if(day==1&&month=='9'){
+            dayDiv.classList.add('special');
+          }
+          if(day==30&&month=='5'){
+            dayDiv.classList.add('special');
+          }
+        }
+
+        grid.appendChild(dayDiv);
+      }
+
+      monthDiv.appendChild(grid);
+      return monthDiv;
+    }
+
+    // Generate all months
+    let current = new Date(startDate);
+    while (current <= endDate) {
+      const monthView = generateMonth(current.getFullYear(), current.getMonth());
+      calendarContainer.appendChild(monthView);
+      current.setMonth(current.getMonth() + 1);
+    }
+  </script>
+</body>
+</html>
